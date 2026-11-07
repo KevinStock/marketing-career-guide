@@ -1,0 +1,14 @@
+{
+  "name": "marketing-career-guide",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A self-study path into targeted marketing in Japan, published with GitHub Pages.",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "serve": "node build.mjs && npx --yes http-server@14.1.1 _site -p 8080"
+  },
+  "dependencies": {
+    "markdown-it": "14.1.0"
+  }
+}

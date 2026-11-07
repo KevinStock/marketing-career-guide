@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="A bilingual self-assessment that shows which of four entry-level marketing roles fits you best.">
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Marketing Role Finder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Shippori+Mincho+B1:wght@700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: one narrow phone-first column; sticky header with progress + step tabs; each step is a stack of question cards. Indigo ink on cool paper, four role hues. */
+:root {
+  --paper: #F4F6F9;
+  --card: #FFFFFF;
+  --ink: #1A2340;
+  --muted: #586179;
+  --line: #DCE1EA;
+  --accent: #2D4A8A;
+  --accent-soft: #E6ECF8;
+  --on-accent: #FFFFFF;
+  --sns: #B0406F;
+  --ads: #A86A12;
+  --content: #2C7458;
+  --analytics: #2A6F8F;
+  --good: #2C7458;
+  --font-display: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-body: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0F1320; --card: #171C2B; --ink: #E6E9F2; --muted: #9AA3BA; --line: #2A3146;
+    --accent: #93AAE6; --accent-soft: #1F2A45; --on-accent: #0F1320;
+    --sns: #E58AB2; --ads: #E2B35C; --content: #6CC7A0; --analytics: #6FB9DB; --good: #6CC7A0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0F1320; --card: #171C2B; --ink: #E6E9F2; --muted: #9AA3BA; --line: #2A3146;
+  --accent: #93AAE6; --accent-soft: #1F2A45; --on-accent: #0F1320;
+  --sns: #E58AB2; --ads: #E2B35C; --content: #6CC7A0; --analytics: #6FB9DB; --good: #6CC7A0;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.7;
+  -webkit-text-size-adjust: 100%;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+.wrap { max-width: 640px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+header.top .wrap { padding-block: 12px 0; display: grid; gap: 10px; }
+.home-link { font-size: 13px; color: var(--muted); text-decoration: none; }
+.home-link:hover { color: var(--accent); }
+.titlerow { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { font-family: var(--font-display); font-size: 17px; line-height: 1.3; text-wrap: balance; min-width: 0; }
+.lang { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 2px; flex-shrink: 0; background: var(--card); }
+.lang button { border: 0; background: none; color: var(--muted); font: 500 13px var(--font-body); padding: 6px 12px; border-radius: 999px; cursor: pointer; min-height: 32px; }
+.lang button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+.bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--accent); transition: width .3s ease; }
+.meta { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+.meta .num { font-family: var(--font-num); }
+.tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; margin-inline: -4px; padding-inline: 4px; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs button { flex-shrink: 0; border: 0; background: none; color: var(--muted); font: 500 14px var(--font-body); padding: 8px 10px 10px; border-bottom: 2px solid transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; }
+.tabs button[aria-current="step"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tabs .done { width: 16px; height: 16px; border-radius: 50%; background: var(--good); color: var(--card); display: inline-grid; place-items: center; font-size: 10px; line-height: 1; }
+
+main .wrap { padding-block: 24px 64px; display: grid; gap: 20px; }
+h1, h2 { font-family: var(--font-display); font-weight: 700; line-height: 1.35; text-wrap: balance; margin: 0; }
+h1 { font-size: 26px; }
+h2 { font-size: 20px; }
+h3 { font-size: 16px; font-weight: 700; margin: 0; line-height: 1.5; }
+p { margin: 0; }
+.lede { color: var(--muted); }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.stack { display: grid; gap: 12px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.note { font-size: 14px; color: var(--muted); padding: 12px 14px; border-radius: 10px; background: var(--accent-soft); }
+
+.roles { display: grid; gap: 10px; }
+.role { display: grid; grid-template-columns: 10px 1fr; gap: 12px; align-items: start; }
+.role .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 8px; }
+.role b { display: block; }
+.role span { color: var(--muted); font-size: 14px; }
+.c-sns { background: var(--sns); } .c-ads { background: var(--ads); } .c-content { background: var(--content); } .c-analytics { background: var(--analytics); }
+
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+legend { padding: 0; font-weight: 700; line-height: 1.55; margin-bottom: 12px; display: flex; gap: 10px; }
+legend .qn { font-family: var(--font-num); color: var(--muted); font-weight: 500; flex-shrink: 0; }
+.opts { display: grid; gap: 8px; }
+.opt { position: relative; display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; min-height: 48px; line-height: 1.55; }
+.opt input, .pick input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.opt .letter { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; font-family: var(--font-num); font-size: 12px; color: var(--muted); margin-top: -1px; }
+.opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.opt:has(input:checked) .letter { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.opt:has(input:focus-visible), .pick:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.card.answered { border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+
+.task-head { display: flex; align-items: center; gap: 10px; }
+.chip { font-size: 12px; font-weight: 500; padding: 2px 10px; border-radius: 999px; color: var(--card); flex-shrink: 0; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; font-size: 13px; }
+td.n, th.n { text-align: right; font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+ol.sub { margin: 0; padding-left: 1.4em; display: grid; gap: 4px; }
+label.field { display: grid; gap: 6px; font-weight: 500; font-size: 14px; }
+label.field small { font-weight: 400; color: var(--muted); }
+textarea { width: 100%; min-height: 110px; resize: vertical; font: 16px/1.6 var(--font-body); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+textarea:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rate { display: grid; gap: 14px; padding-top: 4px; border-top: 1px dashed var(--line); }
+.rate .q { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+.scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.scale.two { grid-template-columns: repeat(2, 1fr); }
+.pick { position: relative; display: grid; place-items: center; min-height: 44px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; font-family: var(--font-num); font-size: 15px; background: var(--card); }
+.scale.two .pick { font-family: var(--font-body); }
+.pick:has(input:checked) { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+.btnrow { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn { appearance: none; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: 500 15px var(--font-body); padding: 11px 18px; border-radius: 10px; min-height: 46px; cursor: pointer; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn.danger { color: #B42318; border-color: color-mix(in srgb, #B42318 40%, var(--line)); }
+:root[data-theme="dark"] .btn.danger { color: #F49A90; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.danger { color: #F49A90; } }
+.btn:disabled { opacity: .5; cursor: default; }
+.navrow { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.navrow .btn.primary { margin-left: auto; }
+.status { font-size: 14px; color: var(--good); min-height: 1.4em; }
+.status.err { color: var(--muted); }
+
+.top-role { border-width: 2px; }
+.top-role .name { font-family: var(--font-display); font-size: 24px; line-height: 1.3; }
+.scores { display: grid; gap: 12px; }
+.score { display: grid; gap: 4px; }
+.score .row { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; }
+.score .row .num { font-family: var(--font-num); font-variant-numeric: tabular-nums; color: var(--muted); }
+.track { height: 10px; background: var(--line); border-radius: 5px; overflow: hidden; }
+.track > i { display: block; height: 100%; border-radius: 5px; }
+.kv { display: grid; gap: 2px; }
+.kv .k { font-size: 12px; letter-spacing: .06em; color: var(--muted); font-weight: 500; }
+.missing { margin: 0; padding-left: 1.2em; }
+.missing button { border: 0; background: none; color: var(--accent); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 0; }
+.summary-out { font-size: 13px; min-height: 160px; }
+.filelabel { position: relative; overflow: hidden; display: inline-grid; place-items: center; }
+.filelabel input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.confirm { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; }
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="home-link" href="../">← Marketing Career Guide</a>
+    <div class="titlerow">
+      <div class="brand" id="brand"></div>
+      <div class="lang" role="group" aria-label="Language / 言語">
+        <button type="button" id="lang-en" data-lang="en" lang="en">EN</button>
+        <button type="button" id="lang-ja" data-lang="ja" lang="ja">日本語</button>
+      </div>
+    </div>
+    <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+    <div class="meta"><span id="pct" class="num"></span><span id="savestate"></span></div>
+    <nav class="tabs" id="tabs"></nav>
+  </div>
+</header>
+<main><div class="wrap" id="view"></div></main>
+
+<script>
+const ROLES = ['sns', 'ads', 'content', 'analytics'];
+const KEY = [
+  ['content','sns','analytics','ads'], ['ads','content','sns','analytics'], ['analytics','ads','content','sns'],
+  ['ads','sns','content','analytics'], ['ads','analytics','sns','content'], ['ads','sns','content','analytics'],
+  ['ads','sns','content','analytics'], ['sns','ads','analytics','content'], ['ads','content','sns','analytics'],
+  ['content','ads','sns','analytics'], ['content','ads','sns','analytics'], ['sns','content','ads','analytics']
+];
+const TASK_ROLE = ['sns', 'ads', 'content', 'analytics'];
+const LETTERS = ['A', 'B', 'C', 'D'];
+
+const T = {
+en: {
+  brand: 'Which Marketing Role Fits You?',
+  tabs: ['Start', 'Questions', 'Tasks', 'Results', 'Reflect', 'Save'],
+  pct: n => `${n}% complete`,
+  saved: t => `Saved on this device · ${t}`,
+  notSaving: 'Not saving automatically here. Use Save.',
+  back: 'Back',
+  roles: {
+    sns: { name: 'Social media', jp: 'SNS運用', line: 'Plan, create and post content for a company\'s Instagram, TikTok, X or LINE, and read how it performed.', enjoy: 'Trends, visuals, writing short and catchy, talking with customers.', first: 'Take the free LINEヤフー Marketing Skill Badge (LINE official account, Basic) and the Meta Blueprint beginner course. Start a practice Instagram account for an imaginary shop.' },
+    ads: { name: 'Ad operations', jp: '広告運用', line: 'Set up and adjust paid ads on Google, Yahoo!, LINE and Meta so each yen brings in more customers.', enjoy: 'Fast results, testing, numbers tied to money, explaining results to others.', first: 'Take the free Google Ads Search certification on Google Skillshop. Look for agency jobs marked 未経験OK (no experience needed).' },
+    content: { name: 'SEO & content', jp: 'SEO・コンテンツ', line: 'Write articles and pages that people find through search, and improve them over time.', enjoy: 'Writing, research, patient work that builds over months.', first: 'Take the free Google Analytics certification, then write two sample articles on a free blog.' },
+    analytics: { name: 'Analytics & CRM', jp: 'アクセス解析・CRM', line: 'Track what visitors and customers do, find problems in the numbers, and report them clearly.', enjoy: 'Patterns, accuracy, spreadsheets, finding what others miss.', first: 'Take the free Google Analytics certification. Consider ウェブ解析士 (Web Analyst) or 統計検定 Grade 3 next.' }
+  },
+  start: {
+    h: 'Find the marketing job that suits you',
+    p: 'This form helps you choose between four beginner-friendly marketing jobs. There are no right or wrong answers. Answer honestly, not with what sounds impressive.',
+    time: 'Part 1 takes about 20 minutes. Part 2 is four short tasks of 20 minutes each, and you can spread them over several days.',
+    rolesH: 'The four roles',
+    save: 'Your answers save automatically on this device. To continue on another phone or computer, use the Save tab.',
+    go: 'Start the questions'
+  },
+  q: {
+    h: 'Part 1: Questions',
+    p: 'Choose the one answer closest to you. If two feel equal, pick the one you\'d choose on a tired day.',
+    count: n => `${n} of 12 answered`,
+    next: 'Next: try the work',
+    items: [
+      ['On a free afternoon, which sounds most appealing?', ['Writing a long post about something you know well', 'Making a set of good-looking posts for a friend\'s shop', 'Organizing a messy spreadsheet until it makes sense', 'Trying a few versions of something to see which one wins']],
+      ['When you see an ad or post that really works, what do you notice first?', ['How many clicks or sales it probably brought in', 'The wording and the story', 'The visual style and the mood', 'How they knew to show it to someone like you']],
+      ['Something you made performed badly. What\'s your first reaction?', ['Look at the data to find exactly where it went wrong', 'Change one thing at a time and test again', 'Rewrite it so it\'s clearer and more useful', 'Redesign it so it catches attention faster']],
+      ['How quickly do you like to see results from your work?', ['Within hours', 'Within a day or two', 'Over weeks or months. I\'m patient', 'Speed doesn\'t matter if I\'m finding interesting patterns']],
+      ['Imagine you\'re responsible for a client\'s ¥1,000,000 monthly ad budget. How do you feel?', ['Excited. I\'d want to make every yen count', 'Fine if someone else decides; I\'d rather check the numbers', 'Nervous. I\'d rather make the posts people see', 'I\'d rather build something that grows without spending money']],
+      ['Which task would you volunteer for?', ['Writing a weekly report that explains results to a client', 'Replying to customer comments and messages', 'Researching what questions people type into Google', 'Setting up a tracking sheet so the whole team sees the same numbers']],
+      ['Which daily rhythm suits you best?', ['Many small tasks for several clients every day', 'A posting schedule that follows the latest trends', 'Long, focused blocks on one project', 'Careful, detailed work where accuracy matters most']],
+      ['Which tool would you most like to master?', ['Canva or CapCut', 'Google Ads or Meta Ads Manager', 'Google Analytics or Excel', 'WordPress or Google Search Console']],
+      ['In past jobs or school, what were you praised for?', ['Persuading people or hitting sales targets', 'Clear writing or explaining things well', 'Creativity, design sense, or knowing what\'s trending', 'Being accurate, organized and reliable with details']],
+      ['Which result would make you proudest?', ['“Your article is the top Google result for this topic.”', '“Our cost per new customer fell 30% because of you.”', '“Your post went viral and our followers doubled.”', '“Your report showed us a problem nobody else saw.”']],
+      ['What\'s your ideal working style?', ['Fully remote with flexible hours, maybe freelance', 'In an office with a team, fast-paced', 'Remote or hybrid, mixing creative work with talking to customers', 'Quiet and structured, with clear processes']],
+      ['How do you use social media yourself?', ['I post often and follow trends closely', 'I mostly read and search for information', 'I notice the ads and wonder how much they cost', 'I rarely use it; I\'d rather work with data']]
+    ]
+  },
+  t: {
+    h: 'Part 2: Try the work',
+    p: 'Trying real work tells you more than answering questions about yourself. Spend about 20 minutes on each task. Stop when the time is up, even if you\'re not finished. Quality doesn\'t matter here. What matters is how it felt.',
+    scene: 'All four tasks use the same imaginary business: Café Hinata, a small neighborhood café that also sells coffee beans online.',
+    work: 'Your work', workHint: 'Optional. Write here or on paper, whichever is easier.',
+    rateH: 'Rate it right after you finish',
+    enjoy: 'How much did you enjoy it?', ease: 'How easy did it feel?', lo: '1 = not at all', hi: '5 = very',
+    more: 'Did you want to keep going after 20 minutes?', yes: 'Yes', no: 'No',
+    count: n => `${n} of 4 tasks rated`,
+    next: 'Next: see your results',
+    cols: ['Channel', 'Visitors', 'Purchases'], wcols: ['Week', 'Visitors', 'Purchases'],
+    channels: ['Instagram', 'Google search', 'LINE', 'Email newsletter'], week: n => `${n}`,
+    tasks: [
+      { title: 'Instagram posts', body: ['Café Hinata is launching a seasonal drink, a chestnut latte. Write three Instagram captions for it, each with hashtags. For each one, describe in one sentence what the photo or video should show.'] },
+      { title: 'Budget and headlines', body: ['Here is last month\'s online shop data:'], table: 'channels', steps: ['Café Hinata has ¥30,000 extra for ads next month. How would you split it across these channels? Explain why in three sentences.', 'Write three Google search ad headlines for the coffee beans, each 15 Japanese characters or fewer.'] },
+      { title: 'Article outline', body: ['Plan a blog article for Café Hinata\'s website titled roughly "How to choose your first coffee grinder." Write the title, five section headings, and one sentence on what each section says. Think about what a beginner would actually type into Google.'] },
+      { title: 'Find the problem', body: ['Here are eight weeks of online shop data:'], table: 'weeks', steps: ['What changed, and when?', 'List three possible causes.', 'What would you check first, and why?'] }
+    ]
+  },
+  r: {
+    h: 'Part 3: Your results',
+    wait: 'Your results appear here once you finish Parts 1 and 2.',
+    missQ: n => `${n} question${n === 1 ? '' : 's'} left in Part 1`,
+    missT: n => `${n} task${n === 1 ? '' : 's'} still need${n === 1 ? 's' : ''} a full rating in Part 2`,
+    top: 'Your best starting point',
+    note: 'Your highest total shows where to start, not where you must stay. Many marketers move between these roles over their careers.',
+    enjoyK: 'You probably enjoy', firstK: 'Your first step',
+    scoresH: 'Your scores', key: 'Questions matched + task enjoyment + 3 if you kept going. Maximum 20.',
+    q: 'questions', e: 'enjoyment', b: 'bonus',
+    tie: 'Tied on total, so ranked by which task felt easier.',
+    closeH: 'Two roles are close',
+    combos: {
+      'ads+sns': 'Social media + Ad operations → social media ads (SNS広告運用). This is the most common beginner job.',
+      'analytics+content': 'SEO & content + Analytics → SEO marketer, who improves pages using search data.',
+      'ads+analytics': 'Ad operations + Analytics → performance marketer, focused on cost per customer.',
+      'content+sns': 'Social media + SEO & content → content marketer for a brand\'s own channels.',
+      other: 'Both are good starting points. Try one small project in each before deciding.'
+    },
+    othersH: 'The other roles',
+    checkH: 'Check your Part 2 work',
+    check2: 'Task 2: Instagram brings the most visitors but only about 0.5% buy. LINE (4%) and Google search (3%) turn visitors into buyers far better. A strong answer moves most of the money toward those two, or explains how to fix Instagram first.',
+    check4: 'Task 4: In weeks 5 and 6, purchases fell by more than half while visitors stayed the same. People still arrived but stopped buying. Good causes to check include a broken checkout or payment page, items out of stock, or a price change. Checking the checkout page first is a strong answer, because it is quick to test and loses sales every day it is broken.',
+    next: 'Next: reflect'
+  },
+  f: {
+    h: 'Part 4: Reflect and talk it over',
+    p: 'Write short answers. Talking them through with someone you trust helps you decide your next step.',
+    items: ['Did your result surprise you? Why or why not?', 'Which task would you happily do again tomorrow, and which would you avoid?', 'Was anything harder than you expected? What would help you get better at it?', 'Is there anything in your life right now (time, money, location, family) that makes one role easier or harder to start?', 'What is one small step you can finish in the next two weeks?'],
+    notes: 'My notes',
+    next: 'Next: save and share'
+  },
+  s: {
+    h: 'Save and share',
+    autoH: 'On this device',
+    autoP: 'Your answers save automatically in this browser. Clearing browser data or using a private window can erase them.',
+    autoOff: 'This browser isn\'t keeping your answers. Save a progress file or copy a progress code below so you don\'t lose your work.',
+    shareH: 'Share your results',
+    shareP: 'Copy a summary of all your answers, then paste it into LINE, email or a message.',
+    copySummary: 'Copy summary', copied: 'Copied',
+    copyFail: 'Couldn\'t copy automatically. Select the text below and copy it.',
+    moveH: 'Continue on another device',
+    moveP: 'Save a progress file, or copy a progress code. Then load it on the other device on this same tab.',
+    saveFile: 'Save progress file', savedFile: 'Progress file saved', declined: 'Save cancelled', saveFail: 'Couldn\'t save a file here. Copy the progress code instead.',
+    copyCode: 'Copy progress code',
+    loadH: 'Load saved progress',
+    loadFile: 'Choose progress file',
+    pasteL: 'Or paste a progress code',
+    restore: 'Restore', restored: 'Progress restored',
+    bad: 'That isn\'t a valid progress code or file. Copy it again from the other device.',
+    resetH: 'Start over', resetP: 'Clears every answer on this device.',
+    resetBtn: 'Start over', resetQ: 'Clear all answers on this device?', resetYes: 'Yes, clear everything', cancel: 'Cancel'
+  },
+  sum: { title: 'Marketing role self-assessment', p1: 'Part 1 answers', p2: 'Part 2 tasks', ratings: (e, s, m) => `enjoyment ${e}/5 · ease ${s}/5 · kept going: ${m}`, work: 'Work', res: 'Results', top: 'Best starting point', ref: 'Reflection', notes: 'Notes', none: '(not answered)' }
+},
+ja: {
+  brand: 'あなたに合うマーケティングの仕事は？',
+  tabs: ['はじめに', '質問', 'タスク', '結果', 'ふりかえり', '保存'],
+  pct: n => `${n}% 完了`,
+  saved: t => `この端末に保存済み · ${t}`,
+  notSaving: 'ここでは自動保存されません。「保存」を使ってください。',
+  back: '戻る',
+  roles: {
+    sns: { name: 'SNS運用', jp: '', line: '企業のInstagram、TikTok、X、LINEの投稿を企画・作成・投稿し、反応を分析します。', enjoy: 'トレンド、ビジュアル、短くて印象に残る文章、お客さまとのやりとり。', first: '無料の「LINEヤフー マーケティングスキルバッジ」（LINE公式アカウント Basic）と、Meta Blueprintの入門コースを受けましょう。架空のお店の練習用Instagramアカウントを作ってみましょう。' },
+    ads: { name: '広告運用', jp: '', line: 'Google、Yahoo!、LINE、Metaの有料広告を設定・調整し、広告費1円あたりの集客を増やします。', enjoy: 'すぐに結果が出ること、テスト、お金に直結する数字、結果を人に説明すること。', first: 'Google スキルショップで、無料の「Google広告 検索広告」認定資格を受けましょう。「未経験OK」の広告代理店の求人を探してみましょう。' },
+    content: { name: 'SEO・コンテンツ', jp: '', line: '検索で見つけてもらえる記事やページを書き、時間をかけて改善します。', enjoy: '書くこと、調べること、数か月かけて積み上げる地道な仕事。', first: '無料のGoogleアナリティクス認定資格を受けてから、無料ブログで記事のサンプルを2本書きましょう。' },
+    analytics: { name: 'アクセス解析・CRM', jp: '', line: '訪問者やお客さまの行動を追い、数字の中にある問題を見つけて、わかりやすく報告します。', enjoy: 'パターン、正確さ、スプレッドシート、人が見落とすものを見つけること。', first: '無料のGoogleアナリティクス認定資格を受けましょう。次はウェブ解析士か統計検定3級を検討しましょう。' }
+  },
+  start: {
+    h: 'あなたに合うマーケティングの仕事を見つけよう',
+    p: 'このフォームでは、未経験から始めやすい4つのマーケティングの仕事のうち、どれが自分に一番合っているかを見つけます。正解も不正解もありません。立派に聞こえる答えではなく、正直に答えてください。',
+    time: 'パート1は約20分です。パート2は20分の短いタスクが4つで、数日に分けてもかまいません。',
+    rolesH: '4つの仕事',
+    save: '回答はこの端末に自動で保存されます。別のスマホやパソコンで続けるときは「保存」タブを使ってください。',
+    go: '質問をはじめる'
+  },
+  q: {
+    h: 'パート1：質問',
+    p: '自分に一番近い答えを1つ選んでください。2つで迷ったら、疲れている日に選びそうなほうを選んでください。',
+    count: n => `12問中 ${n}問 回答済み`,
+    next: '次へ：仕事を試す',
+    items: [
+      ['自由な午後、一番やりたいことは？', ['自分がよく知っていることについて、長い文章を書く', '友だちのお店のために、見た目のいい投稿をいくつか作る', 'ごちゃごちゃした表を整理して、わかりやすくする', 'いくつかのパターンを試して、どれが一番うまくいくか確かめる']],
+      ['効果がありそうな広告や投稿を見たとき、まず何に気づきますか？', ['どれくらいクリックや売上につながったか', '言葉選びとストーリー', '見た目のスタイルと雰囲気', 'なぜ自分のような人に表示されたのか']],
+      ['自分が作ったものの結果が悪かったとき、最初にどうしますか？', ['データを見て、どこでつまずいたのかを正確に探す', '一つずつ変えて、もう一度テストする', 'もっとわかりやすく役に立つように書き直す', 'もっと目を引くようにデザインし直す']],
+      ['仕事の結果は、どれくらいの早さで見たいですか？', ['数時間以内', '1〜2日以内', '数週間〜数か月かかってもいい。気長に待てる', '面白いパターンが見つかるなら、早さは気にしない']],
+      ['お客さまの月100万円の広告予算を任されたら、どう感じますか？', ['ワクワクする。1円もムダにしたくない', '判断は誰かに任せて、自分は数字をチェックしたい', '不安。人が見る投稿を作るほうがいい', 'お金をかけずに育っていくものを作りたい']],
+      ['自分から手を挙げたい仕事はどれですか？', ['毎週の結果をお客さまに説明するレポートを書く', 'お客さまのコメントやメッセージに返信する', '人がGoogleでどんな質問を検索しているか調べる', 'チーム全員が同じ数字を見られる管理シートを作る']],
+      ['どんな毎日のリズムが合っていますか？', ['複数のお客さまの小さな仕事を、毎日たくさんこなす', '最新のトレンドに合わせて、投稿スケジュールを回す', '一つのプロジェクトに、長い時間集中する', '正確さが一番大事な、丁寧で細かい作業']],
+      ['一番使いこなしたいツールはどれですか？', ['CanvaやCapCut', 'Google広告やMeta広告マネージャ', 'GoogleアナリティクスやExcel', 'WordPressやGoogle Search Console']],
+      ['これまでの仕事や学校で、何をほめられましたか？', ['人を説得すること、売上目標を達成すること', 'わかりやすい文章や説明', '創造性、デザインのセンス、流行に敏感なこと', '正確で整理されていて、細かいことでも信頼できること']],
+      ['どんな成果が一番うれしいですか？', ['「あなたの記事が、このテーマでGoogle検索1位です」', '「あなたのおかげで、新規顧客1人あたりのコストが30%下がりました」', '「あなたの投稿がバズって、フォロワーが2倍になりました」', '「あなたのレポートで、誰も気づかなかった問題が見つかりました」']],
+      ['理想の働き方は？', ['完全リモートで時間も自由。フリーランスもあり', 'オフィスでチームと一緒に、スピード感をもって', 'リモートかハイブリッドで、クリエイティブな作業とお客さま対応の両方', '静かで、決まった手順がある環境']],
+      ['自分ではSNSをどう使っていますか？', ['よく投稿して、トレンドを細かくチェックしている', '主に読んだり、情報を検索したりしている', '広告が目に入ると、いくらかかっているのか気になる', 'ほとんど使わない。データを扱うほうが好き']]
+    ]
+  },
+  t: {
+    h: 'パート2：仕事を試す',
+    p: '自分についての質問に答えるより、実際の仕事を試すほうがよくわかります。各タスクに約20分かけてください。終わっていなくても、時間が来たらストップ。出来の良さは関係ありません。大事なのは、やってみてどう感じたかです。',
+    scene: '4つのタスクはすべて、同じ架空のお店を使います。「カフェ ひなた」は近所の小さなカフェで、コーヒー豆のネット販売もしています。',
+    work: 'あなたの回答', workHint: '任意です。ここに書いても、紙に書いてもかまいません。',
+    rateH: '終わったらすぐに評価してください',
+    enjoy: 'どれくらい楽しかったですか？', ease: 'どれくらいやりやすかったですか？', lo: '1 = まったく', hi: '5 = とても',
+    more: '20分たった後も、もっと続けたかったですか？', yes: 'はい', no: 'いいえ',
+    count: n => `4つ中 ${n}つ 評価済み`,
+    next: '次へ：結果を見る',
+    cols: ['チャネル', '訪問者数', '購入数'], wcols: ['週', '訪問者数', '購入数'],
+    channels: ['Instagram', 'Google検索', 'LINE', 'メールマガジン'], week: n => `${n}週目`,
+    tasks: [
+      { title: 'Instagramの投稿', body: ['カフェ ひなたが、季節限定ドリンク「マロンラテ」を発売します。Instagramのキャプションを、ハッシュタグ付きで3つ書いてください。それぞれ、写真や動画に何を写すべきかを1文で説明してください。'] },
+      { title: '予算と広告の見出し', body: ['先月のネットショップのデータです。'], table: 'channels', steps: ['来月、広告費が3万円増えます。どのチャネルにどう配分しますか？理由を3文で説明してください。', 'コーヒー豆のGoogle検索広告の見出しを3つ、それぞれ15文字以内で書いてください。'] },
+      { title: '記事の構成', body: ['カフェ ひなたのウェブサイト用に、「初めてのコーヒーミルの選び方」というブログ記事を企画してください。タイトル、5つの見出し、それぞれの見出しで伝える内容を1文で書いてください。初心者が実際にGoogleで何と検索するかを考えてみましょう。'] },
+      { title: '問題を見つける', body: ['ネットショップの8週間分のデータです。'], table: 'weeks', steps: ['何が、いつ変わりましたか？', '考えられる原因を3つ挙げてください。', 'まず何を確認しますか？その理由は？'] }
+    ]
+  },
+  r: {
+    h: 'パート3：結果',
+    wait: 'パート1とパート2が終わると、ここに結果が表示されます。',
+    missQ: n => `パート1：残り${n}問`,
+    missT: n => `パート2：あと${n}つのタスクの評価が必要です`,
+    top: 'あなたに一番合いそうなスタート地点',
+    note: '一番高い合計点は、どこから始めるかを示すものです。ずっとそこにいなければならないわけではありません。多くのマーケターは、キャリアの中でこれらの仕事を行き来しています。',
+    enjoyK: '向いていそうなこと', firstK: '最初の一歩',
+    scoresH: 'スコア', key: '質問の該当数 ＋ タスクの楽しさ ＋ 続けたかったら3点。最大20点。',
+    q: '質問', e: '楽しさ', b: 'ボーナス',
+    tie: '合計点が同じため、やりやすかったタスクの順に並べています。',
+    closeH: '2つの仕事が僅差です',
+    combos: {
+      'ads+sns': 'SNS運用 ＋ 広告運用 → SNS広告運用。未経験者向けの求人で最も多い仕事です。',
+      'analytics+content': 'SEO・コンテンツ ＋ アクセス解析 → SEOマーケター。検索データを使ってページを改善します。',
+      'ads+analytics': '広告運用 ＋ アクセス解析 → パフォーマンスマーケター。顧客1人あたりのコストに注目します。',
+      'content+sns': 'SNS運用 ＋ SEO・コンテンツ → ブランドの自社メディアを担当するコンテンツマーケター。',
+      other: 'どちらも良いスタート地点です。決める前に、それぞれ小さなプロジェクトを1つずつ試してみましょう。'
+    },
+    othersH: 'ほかの仕事',
+    checkH: 'パート2の答え合わせ',
+    check2: 'タスク2：Instagramは訪問者が一番多いですが、購入するのは約0.5%だけです。LINE（4%）とGoogle検索（3%）のほうが、訪問者をずっと効率よく購入につなげています。良い答えは、予算の大部分をこの2つに回すか、まずInstagramの改善方法を説明しているものです。',
+    check4: 'タスク4：5週目と6週目、訪問者数は変わらないのに、購入数が半分以下に減りました。つまり、人は来ているのに買わなくなったということです。確認すべき原因は、購入・決済ページの不具合、在庫切れ、価格の変更などです。まず購入ページを確認するのは良い答えです。すぐに確かめられて、壊れている間は毎日売上を失うからです。',
+    next: '次へ：ふりかえり'
+  },
+  f: {
+    h: 'パート4：ふりかえって話し合う',
+    p: '短く答えを書いておきましょう。信頼できる人と話してみると、次の一歩を決めやすくなります。',
+    items: ['結果は意外でしたか？なぜですか？', '明日もう一度やってもいいと思うタスクと、避けたいタスクはどれですか？', '思ったより難しかったことはありますか？上達するには何が役立ちそうですか？', '時間、お金、住んでいる場所、家族など、今の生活の中で、どれかの仕事を始めやすく（または始めにくく）する事情はありますか？', 'これから2週間で終えられる、小さな一歩は何ですか？'],
+    notes: 'メモ',
+    next: '次へ：保存と共有'
+  },
+  s: {
+    h: '保存と共有',
+    autoH: 'この端末',
+    autoP: '回答はこのブラウザに自動で保存されます。閲覧データを消したり、プライベートモードを使ったりすると、消えることがあります。',
+    autoOff: 'このブラウザでは回答が保存されていません。消えないように、下の「進捗ファイルを保存」か「進捗コードをコピー」を使ってください。',
+    shareH: '結果を共有する',
+    shareP: 'すべての回答のまとめをコピーして、LINEやメールに貼り付けて送れます。',
+    copySummary: 'まとめをコピー', copied: 'コピーしました',
+    copyFail: '自動でコピーできませんでした。下の文章を選択してコピーしてください。',
+    moveH: '別の端末で続ける',
+    moveP: '進捗ファイルを保存するか、進捗コードをコピーしてください。そのあと、別の端末のこのタブで読み込みます。',
+    saveFile: '進捗ファイルを保存', savedFile: '進捗ファイルを保存しました', declined: '保存をキャンセルしました', saveFail: 'ここではファイルを保存できません。代わりに進捗コードをコピーしてください。',
+    copyCode: '進捗コードをコピー',
+    loadH: '保存した進捗を読み込む',
+    loadFile: '進捗ファイルを選ぶ',
+    pasteL: 'または進捗コードを貼り付け',
+    restore: '読み込む', restored: '進捗を読み込みました',
+    bad: '進捗コードまたはファイルが正しくありません。もう一度、元の端末からコピーしてください。',
+    resetH: '最初からやり直す', resetP: 'この端末のすべての回答を消去します。',
+    resetBtn: 'やり直す', resetQ: 'この端末のすべての回答を消去しますか？', resetYes: 'はい、すべて消去する', cancel: 'キャンセル'
+  },
+  sum: { title: 'マーケティングの仕事 自己診断', p1: 'パート1の回答', p2: 'パート2のタスク', ratings: (e, s, m) => `楽しさ ${e}/5 ・ やりやすさ ${s}/5 ・ 続けたかった：${m}`, work: '回答', res: '結果', top: '一番合いそうなスタート地点', ref: 'ふりかえり', notes: 'メモ', none: '（未回答）' }
+}
+};
+
+const CHANNEL_DATA = [[4000, 20], [1500, 45], [800, 32], [300, 3]];
+const WEEK_DATA = [[2100, 42], [2200, 44], [2050, 41], [2150, 43], [2200, 18], [2100, 20], [2250, 45], [2150, 43]];
+
+const STORE_KEY = 'marketing-role-finder-v1';
+const fresh = lang => ({ v: 1, lang, step: 0, answers: Array(12).fill(null), tasks: [0, 1, 2, 3].map(() => ({ text: '', enjoy: null, ease: null, more: null })), reflect: ['', '', '', '', ''], notes: '', updated: null });
+let canStore = true;
+let savedAt = null;
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) return normalize(JSON.parse(raw));
+  } catch (e) { canStore = false; }
+  const nav = (navigator.language || '').toLowerCase();
+  return fresh(nav.startsWith('ja') ? 'ja' : 'en');
+}
+function normalize(o) {
+  if (!o || typeof o !== 'object' || !Array.isArray(o.answers) || !Array.isArray(o.tasks)) throw new Error('bad');
+  const s = fresh(o.lang === 'ja' ? 'ja' : 'en');
+  s.step = Number.isInteger(o.step) && o.step >= 0 && o.step < 6 ? o.step : 0;
+  s.answers = s.answers.map((_, i) => [0, 1, 2, 3].includes(o.answers[i]) ? o.answers[i] : null);
+  s.tasks = s.tasks.map((t, i) => {
+    const x = o.tasks[i] || {};
+    return { text: typeof x.text === 'string' ? x.text : '', enjoy: [1, 2, 3, 4, 5].includes(x.enjoy) ? x.enjoy : null, ease: [1, 2, 3, 4, 5].includes(x.ease) ? x.ease : null, more: x.more === 'yes' || x.more === 'no' ? x.more : null };
+  });
+  s.reflect = s.reflect.map((_, i) => typeof (o.reflect || [])[i] === 'string' ? o.reflect[i] : '');
+  s.notes = typeof o.notes === 'string' ? o.notes : '';
+  s.updated = o.updated || null;
+  return s;
+}
+let S = load();
+let saveTimer = null;
+function persist() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    S.updated = new Date().toISOString();
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); savedAt = new Date(); canStore = true; }
+    catch (e) { canStore = false; }
+    paintMeta();
+  }, 250);
+}
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const L = () => T[S.lang];
+const answeredQ = () => S.answers.filter(a => a !== null).length;
+const ratedT = () => S.tasks.filter(t => t.enjoy && t.ease && t.more).length;
+const reflected = () => S.reflect.filter(r => r.trim()).length;
+function percent() { return Math.round((answeredQ() + ratedT() * 3 + reflected()) / (12 + 12 + 5) * 100); }
+const stepDone = [() => false, () => answeredQ() === 12, () => ratedT() === 4, () => answeredQ() === 12 && ratedT() === 4, () => reflected() === 5, () => false];
+
+function scores() {
+  return ROLES.map(role => {
+    const q = S.answers.reduce((n, a, i) => n + (a !== null && KEY[i][a] === role ? 1 : 0), 0);
+    const t = S.tasks[TASK_ROLE.indexOf(role)];
+    const e = t.enjoy || 0, b = t.more === 'yes' ? 3 : 0;
+    return { role, q, e, b, total: q + e + b, ease: t.ease || 0 };
+  }).sort((x, y) => y.total - x.total || y.ease - x.ease);
+}
+
+function paintMeta() {
+  const l = L();
+  document.documentElement.lang = S.lang;
+  document.getElementById('brand').textContent = l.brand;
+  const p = percent();
+  document.getElementById('bar').style.width = p + '%';
+  document.getElementById('pct').textContent = l.pct(p);
+  const ss = document.getElementById('savestate');
+  ss.textContent = !canStore ? l.notSaving : savedAt ? l.saved(savedAt.toLocaleTimeString(S.lang === 'ja' ? 'ja-JP' : 'en-US', { hour: 'numeric', minute: '2-digit' })) : '';
+  document.getElementById('lang-en').setAttribute('aria-pressed', S.lang === 'en');
+  document.getElementById('lang-ja').setAttribute('aria-pressed', S.lang === 'ja');
+  document.getElementById('tabs').innerHTML = l.tabs.map((name, i) =>
+    `<button type="button" data-step="${i}" ${i === S.step ? 'aria-current="step"' : ''}>${esc(name)}${stepDone[i]() ? '<span class="done" aria-hidden="true">✓</span>' : ''}</button>`).join('');
+  const qc = document.getElementById('qcount'); if (qc) qc.textContent = l.q.count(answeredQ());
+  const tc = document.getElementById('tcount'); if (tc) tc.textContent = l.t.count(ratedT());
+}
+
+function nav(prevLabel, nextLabel) {
+  return `<div class="navrow">${S.step > 0 ? `<button type="button" class="btn" data-go="${S.step - 1}">${esc(L().back)}</button>` : ''}${nextLabel ? `<button type="button" class="btn primary" data-go="${S.step + 1}">${esc(nextLabel)}</button>` : ''}</div>`;
+}
+
+const views = [
+  function start() {
+    const l = L();
+    return `<div class="stack"><h1>${esc(l.start.h)}</h1><p class="lede">${esc(l.start.p)}</p><p>${esc(l.start.time)}</p></div>
+    <section class="card"><h2>${esc(l.start.rolesH)}</h2><div class="roles">${ROLES.map(r => `<div class="role"><span class="dot c-${r}"></span><div><b>${esc(l.roles[r].name)}${l.roles[r].jp ? ` <span>${esc(l.roles[r].jp)}</span>` : ''}</b><span>${esc(l.roles[r].line)}</span></div></div>`).join('')}</div></section>
+    <p class="note">${esc(l.start.save)}</p>
+    <div class="navrow"><button type="button" class="btn primary" data-go="1">${esc(l.start.go)}</button></div>`;
+  },
+  function questions() {
+    const l = L();
+    return `<div class="stack"><h1>${esc(l.q.h)}</h1><p class="lede">${esc(l.q.p)}</p><p class="eyebrow" id="qcount">${esc(l.q.count(answeredQ()))}</p></div>
+    ${l.q.items.map(([q, opts], i) => `<fieldset class="card${S.answers[i] !== null ? ' answered' : ''}" id="card-q${i}"><legend><span class="qn">${String(i + 1).padStart(2, '0')}</span><span>${esc(q)}</span></legend><div class="opts">${opts.map((o, k) =>
+      `<label class="opt" for="q${i}-${k}"><input type="radio" name="q${i}" id="q${i}-${k}" value="${k}" data-kind="answer" data-i="${i}" ${S.answers[i] === k ? 'checked' : ''}><span class="letter">${LETTERS[k]}</span><span>${esc(o)}</span></label>`).join('')}</div></fieldset>`).join('')}
+    ${nav(true, l.q.next)}`;
+  },
+  function tasks() {
+    const l = L(), t = l.t;
+    const table = kind => {
+      if (kind === 'channels') return `<div class="tablewrap"><table><thead><tr><th>${esc(t.cols[0])}</th><th class="n">${esc(t.cols[1])}</th><th class="n">${esc(t.cols[2])}</th></tr></thead><tbody>${CHANNEL_DATA.map((r, i) => `<tr><td>${esc(t.channels[i])}</td><td class="n">${r[0].toLocaleString('en-US')}</td><td class="n">${r[1]}</td></tr>`).join('')}</tbody></table></div>`;
+      return `<div class="tablewrap"><table><thead><tr><th>${esc(t.wcols[0])}</th><th class="n">${esc(t.wcols[1])}</th><th class="n">${esc(t.wcols[2])}</th></tr></thead><tbody>${WEEK_DATA.map((r, i) => `<tr><td>${esc(t.week(i + 1))}</td><td class="n">${r[0].toLocaleString('en-US')}</td><td class="n">${r[1]}</td></tr>`).join('')}</tbody></table></div>`;
+    };
+    const scale = (i, field, label) => `<div><div class="q" id="lab-${field}-${i}">${esc(label)}</div><div class="scale" role="radiogroup" aria-labelledby="lab-${field}-${i}">${[1, 2, 3, 4, 5].map(v => `<label class="pick" for="${field}-${i}-${v}"><input type="radio" name="${field}-${i}" id="${field}-${i}-${v}" value="${v}" data-kind="${field}" data-i="${i}" ${S.tasks[i][field] === v ? 'checked' : ''}>${v}</label>`).join('')}</div><div class="ends"><span>${esc(t.lo)}</span><span>${esc(t.hi)}</span></div></div>`;
+    return `<div class="stack"><h1>${esc(t.h)}</h1><p class="lede">${esc(t.p)}</p><p class="note">${esc(t.scene)}</p><p class="eyebrow" id="tcount">${esc(t.count(ratedT()))}</p></div>
+    ${t.tasks.map((task, i) => {
+      const role = TASK_ROLE[i];
+      return `<section class="card" id="card-t${i}"><div class="task-head"><span class="chip c-${role}">${esc(l.roles[role].name)}</span><span class="eyebrow">${S.lang === 'ja' ? `タスク${i + 1}` : `Task ${i + 1}`}</span></div><h2>${esc(task.title)}</h2>
+      ${task.body.map(b => `<p>${esc(b)}</p>`).join('')}${task.table ? table(task.table) : ''}${task.steps ? `<ol class="sub">${task.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>` : ''}
+      <label class="field" for="text-${i}">${esc(t.work)} <small>${esc(t.workHint)}</small><textarea id="text-${i}" data-kind="text" data-i="${i}">${esc(S.tasks[i].text)}</textarea></label>
+      <div class="rate"><h3>${esc(t.rateH)}</h3>${scale(i, 'enjoy', t.enjoy)}${scale(i, 'ease', t.ease)}
+      <div><div class="q" id="lab-more-${i}">${esc(t.more)}</div><div class="scale two" role="radiogroup" aria-labelledby="lab-more-${i}">${['yes', 'no'].map(v => `<label class="pick" for="more-${i}-${v}"><input type="radio" name="more-${i}" id="more-${i}-${v}" value="${v}" data-kind="more" data-i="${i}" ${S.tasks[i].more === v ? 'checked' : ''}>${esc(t[v])}</label>`).join('')}</div></div></div></section>`;
+    }).join('')}
+    ${nav(true, t.next)}`;
+  },
+  function results() {
+    const l = L(), r = l.r;
+    const mq = 12 - answeredQ(), mt = 4 - ratedT();
+    if (mq || mt) {
+      return `<div class="stack"><h1>${esc(r.h)}</h1><p class="lede">${esc(r.wait)}</p></div>
+      <section class="card"><ul class="missing">${mq ? `<li><button type="button" data-go="1">${esc(r.missQ(mq))}</button></li>` : ''}${mt ? `<li><button type="button" data-go="2">${esc(r.missT(mt))}</button></li>` : ''}</ul></section>
+      ${nav(true, null)}`;
+    }
+    const sc = scores(), top = sc[0], second = sc[1];
+    const tied = top.total === second.total;
+    const close = second.total >= top.total - 2;
+    const pairKey = [top.role, second.role].sort().join('+');
+    const combo = r.combos[pairKey] || r.combos.other;
+    const R = l.roles[top.role];
+    return `<div class="stack"><h1>${esc(r.h)}</h1></div>
+    <section class="card top-role" style="border-color: var(--${top.role})"><span class="eyebrow">${esc(r.top)}</span><div class="name">${esc(R.name)}${R.jp ? ` <span class="lede" style="font-size:16px">${esc(R.jp)}</span>` : ''}</div><p>${esc(R.line)}</p>
+      <div class="kv"><span class="k">${esc(r.enjoyK)}</span><span>${esc(R.enjoy)}</span></div>
+      <div class="kv"><span class="k">${esc(r.firstK)}</span><span>${esc(R.first)}</span></div>
+      <p class="lede" style="font-size:14px">${esc(r.note)}</p></section>
+    <section class="card"><h2>${esc(r.scoresH)}</h2><p class="lede" style="font-size:14px">${esc(r.key)}</p>
+      <div class="scores">${sc.map(s => `<div class="score"><div class="row"><b>${esc(l.roles[s.role].name)}</b><span class="num">${s.q} + ${s.e} + ${s.b} = <b style="color:var(--ink)">${s.total}</b></span></div><div class="track" role="img" aria-label="${esc(l.roles[s.role].name)}: ${s.total} / 20"><i class="c-${s.role}" style="width:${s.total / 20 * 100}%"></i></div></div>`).join('')}</div>
+      ${tied ? `<p class="lede" style="font-size:14px">${esc(r.tie)}</p>` : ''}</section>
+    ${close ? `<section class="card"><h2>${esc(r.closeH)}</h2><p>${esc(combo)}</p></section>` : ''}
+    <section class="card"><h2>${esc(r.othersH)}</h2><div class="roles">${sc.slice(1).map(s => `<div class="role"><span class="dot c-${s.role}"></span><div><b>${esc(l.roles[s.role].name)}</b><span>${esc(l.roles[s.role].first)}</span></div></div>`).join('')}</div></section>
+    <section class="card"><h2>${esc(r.checkH)}</h2><p>${esc(r.check2)}</p><p>${esc(r.check4)}</p></section>
+    ${nav(true, r.next)}`;
+  },
+  function reflect() {
+    const l = L(), f = l.f;
+    return `<div class="stack"><h1>${esc(f.h)}</h1><p class="lede">${esc(f.p)}</p></div>
+    ${f.items.map((q, i) => `<section class="card"><label class="field" for="ref-${i}"><span style="font-size:16px;font-weight:700">${i + 1}. ${esc(q)}</span><textarea id="ref-${i}" data-kind="reflect" data-i="${i}">${esc(S.reflect[i])}</textarea></label></section>`).join('')}
+    <section class="card"><label class="field" for="notes"><span style="font-size:16px;font-weight:700">${esc(f.notes)}</span><textarea id="notes" data-kind="notes">${esc(S.notes)}</textarea></label></section>
+    ${nav(true, f.next)}`;
+  },
+  function save() {
+    const s = L().s;
+    return `<div class="stack"><h1>${esc(s.h)}</h1></div>
+    <section class="card"><h2>${esc(s.autoH)}</h2><p>${esc(canStore ? s.autoP : s.autoOff)}</p></section>
+    <section class="card"><h2>${esc(s.shareH)}</h2><p>${esc(s.shareP)}</p><div class="btnrow"><button type="button" class="btn primary" id="copy-summary">${esc(s.copySummary)}</button></div><p class="status" id="st-summary" role="status"></p><textarea id="summary-text" class="summary-out" readonly hidden></textarea></section>
+    <section class="card"><h2>${esc(s.moveH)}</h2><p>${esc(s.moveP)}</p><div class="btnrow"><button type="button" class="btn" id="save-file" hidden>${esc(s.saveFile)}</button><button type="button" class="btn" id="copy-code">${esc(s.copyCode)}</button></div><p class="status" id="st-move" role="status"></p><textarea id="code-text" class="summary-out" readonly hidden></textarea></section>
+    <section class="card"><h2>${esc(s.loadH)}</h2><div class="btnrow"><label class="btn filelabel" for="load-file">${esc(s.loadFile)}<input type="file" id="load-file" accept=".json,application/json,text/plain"></label></div>
+      <label class="field" for="paste-code">${esc(s.pasteL)}<textarea id="paste-code" style="min-height:80px"></textarea></label><div class="btnrow"><button type="button" class="btn" id="restore">${esc(s.restore)}</button></div><p class="status" id="st-load" role="status"></p></section>
+    <section class="card"><h2>${esc(s.resetH)}</h2><p class="lede">${esc(s.resetP)}</p><div class="btnrow" id="reset-row"><button type="button" class="btn danger" id="reset">${esc(s.resetBtn)}</button></div>
+      <div class="confirm" id="reset-confirm" hidden><p>${esc(s.resetQ)}</p><div class="btnrow"><button type="button" class="btn danger" id="reset-yes">${esc(s.resetYes)}</button><button type="button" class="btn" id="reset-no">${esc(s.cancel)}</button></div></div></section>
+    ${nav(true, null)}`;
+  }
+];
+
+let downloads = null;
+function render(scrollTop) {
+  document.getElementById('view').innerHTML = views[S.step]();
+  paintMeta();
+  if (S.step === 5) wireSave();
+  if (scrollTop) window.scrollTo({ top: 0 });
+}
+
+function summaryText() {
+  const l = L(), m = l.sum, out = [];
+  out.push(m.title, '');
+  out.push(`■ ${m.p1}`);
+  l.q.items.forEach(([q, opts], i) => out.push(`${i + 1}. ${q}\n   → ${S.answers[i] !== null ? `${LETTERS[S.answers[i]]}) ${opts[S.answers[i]]}` : m.none}`));
+  out.push('', `■ ${m.p2}`);
+  l.t.tasks.forEach((t, i) => {
+    const x = S.tasks[i];
+    out.push(`${i + 1}. ${t.title} — ${m.ratings(x.enjoy ?? '-', x.ease ?? '-', x.more ? l.t[x.more] : '-')}`);
+    if (x.text.trim()) out.push(`   ${m.work}: ${x.text.trim().replace(/\n/g, '\n   ')}`);
+  });
+  if (answeredQ() === 12 && ratedT() === 4) {
+    const sc = scores();
+    out.push('', `■ ${m.res}`, `${m.top}: ${l.roles[sc[0].role].name}`);
+    sc.forEach(s => out.push(`   ${l.roles[s.role].name}: ${s.total}/20 (${s.q} + ${s.e} + ${s.b})`));
+  }
+  out.push('', `■ ${m.ref}`);
+  l.f.items.forEach((q, i) => out.push(`${i + 1}. ${q}\n   → ${S.reflect[i].trim() || m.none}`));
+  if (S.notes.trim()) out.push('', `■ ${m.notes}`, S.notes.trim());
+  return out.join('\n');
+}
+const encode = () => btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+function decode(txt) {
+  const t = txt.trim();
+  if (!t) throw new Error('empty');
+  if (t.startsWith('{')) return normalize(JSON.parse(t));
+  return normalize(JSON.parse(decodeURIComponent(escape(atob(t)))));
+}
+async function copyText(text, statusEl, fallbackEl) {
+  const s = L().s;
+  try { await navigator.clipboard.writeText(text); statusEl.className = 'status'; statusEl.textContent = s.copied; }
+  catch (e) { statusEl.className = 'status err'; statusEl.textContent = s.copyFail; fallbackEl.hidden = false; fallbackEl.value = text; fallbackEl.focus(); fallbackEl.select(); }
+}
+function restoreFrom(obj, statusEl) {
+  const lang = S.lang;
+  S = obj; S.lang = lang; S.step = 5;
+  persist(); render(false);
+  const st = document.getElementById('st-load'); st.className = 'status'; st.textContent = L().s.restored;
+}
+function wireSave() {
+  const s = L().s;
+  document.getElementById('copy-summary').addEventListener('click', () => copyText(summaryText(), document.getElementById('st-summary'), document.getElementById('summary-text')));
+  document.getElementById('copy-code').addEventListener('click', () => copyText(encode(), document.getElementById('st-move'), document.getElementById('code-text')));
+  const sf = document.getElementById('save-file');
+  sf.hidden = false;
+  sf.addEventListener('click', async () => {
+    const st = document.getElementById('st-move');
+    try {
+      const data = JSON.stringify(S, null, 2), filename = 'marketing-role-progress.json';
+      if (downloads) await downloads.save({ filename, data });
+      else {
+        const url = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
+        const a = document.createElement('a'); a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+      st.className = 'status'; st.textContent = s.savedFile;
+    } catch (e) {
+      st.className = 'status err';
+      st.textContent = e && e.code === 'declined' ? s.declined : s.saveFail;
+    }
+  });
+  document.getElementById('load-file').addEventListener('change', ev => {
+    const file = ev.target.files && ev.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { try { restoreFrom(decode(String(reader.result))); } catch (e) { const st = document.getElementById('st-load'); st.className = 'status err'; st.textContent = s.bad; } };
+    reader.readAsText(file);
+  });
+  document.getElementById('restore').addEventListener('click', () => {
+    try { restoreFrom(decode(document.getElementById('paste-code').value)); }
+    catch (e) { const st = document.getElementById('st-load'); st.className = 'status err'; st.textContent = s.bad; }
+  });
+  document.getElementById('reset').addEventListener('click', () => { document.getElementById('reset-confirm').hidden = false; document.getElementById('reset-row').hidden = true; });
+  document.getElementById('reset-no').addEventListener('click', () => { document.getElementById('reset-confirm').hidden = true; document.getElementById('reset-row').hidden = false; });
+  document.getElementById('reset-yes').addEventListener('click', () => { S = fresh(S.lang); persist(); render(true); });
+}
+
+document.addEventListener('click', ev => {
+  const go = ev.target.closest('[data-go]');
+  if (go) { S.step = Number(go.dataset.go); persist(); render(true); return; }
+  const tab = ev.target.closest('#tabs [data-step]');
+  if (tab) { S.step = Number(tab.dataset.step); persist(); render(true); return; }
+  const lang = ev.target.closest('.lang [data-lang]');
+  if (lang && lang.dataset.lang !== S.lang) { S.lang = lang.dataset.lang; persist(); render(false); }
+});
+document.getElementById('view').addEventListener('change', ev => {
+  const el = ev.target, k = el.dataset.kind, i = Number(el.dataset.i);
+  if (k === 'answer') { S.answers[i] = Number(el.value); document.getElementById('card-q' + i).classList.add('answered'); }
+  else if (k === 'enjoy' || k === 'ease') S.tasks[i][k] = Number(el.value);
+  else if (k === 'more') S.tasks[i].more = el.value;
+  else return;
+  persist(); paintMeta();
+});
+document.getElementById('view').addEventListener('input', ev => {
+  const el = ev.target, k = el.dataset.kind, i = Number(el.dataset.i);
+  if (k === 'text') S.tasks[i].text = el.value;
+  else if (k === 'reflect') S.reflect[i] = el.value;
+  else if (k === 'notes') S.notes = el.value;
+  else return;
+  persist(); paintMeta();
+});
+
+function boot(data) {
+  if (data && data.state) { try { S = normalize(data.state); } catch (e) {} }
+  render(false);
+  if (window.claude && window.claude.use) {
+    window.claude.use('downloads').then(d => { downloads = d; }).catch(() => {});
+  }
+}
+window.claude?.hot?.snapshot?.(() => ({ state: S }));
+window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? {});
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "title": "Marketing Career Guide",
+  "headline": "From no experience to your first marketing job in Japan",
+  "lede": "Eight short guides and a role finder for starting a career in targeted marketing. Work through them in order, at your own pace.",
+  "updated": "7 November 2026",
+  "footer": "The guides are in English for now. Sources are listed at the end of each guide.",
+  "footerJa": "ガイドの日本語版は準備中です。ロールファインダーとPDFは日本語でもご利用いただけます。",
+  "tools": [
+    { "kind": "Web form · EN / 日本語", "title": "Marketing Role Finder", "text": "12 questions and four short practice tasks. Saves your progress and scores your answers.", "href": "role-finder/" },
+    { "kind": "Web page", "title": "Self-assessment worksheet", "text": "The same assessment as a page you can read through or work on paper.", "href": "worksheet/" },
+    { "kind": "Fillable PDF · English", "title": "Role Finder PDF", "text": "Phone-sized pages you can fill in and save. 0.5 MB.", "href": "downloads/Marketing-Role-Finder-EN.pdf", "download": true },
+    { "kind": "Fillable PDF · 日本語", "title": "ロールファインダー PDF", "text": "スマホで記入・保存できるPDFです。1.8 MB。", "href": "downloads/Marketing-Role-Finder-JA.pdf", "download": true }
+  ],
+  "roadmap": [
+    { "title": "Choose your route", "standard": "Weeks 1–2", "fast": "week 1", "text": "Take the Role Finder, then ask Hello Work which route fits: free training, a school or self-study (Guide 5).", "gate": "Route chosen and paperwork filed" },
+    { "title": "Free platform foundations", "standard": "Months 1–2", "fast": "weeks 1–4", "text": "Google Ads Search and GA4, the LINEヤフー Basic badge, and the Meta Blueprint associate course (Guide 3).", "gate": "Three platform certificates" },
+    { "title": "Structured course and ウェブ解析士", "standard": "Months 2–4", "fast": "weeks 3–8", "text": "Hello Training, a school or a self-study plan; pass the ウェブ解析士 exam (Guide 4).", "gate": "ウェブ解析士 passed" },
+    { "title": "Build your portfolio", "standard": "Months 3–5", "fast": "weeks 6–10", "text": "Two practice pieces plus one real campaign on a ¥10,000–30,000 budget (Guide 6).", "gate": "Three write-ups with numbers and lessons" },
+    { "title": "Job search", "standard": "Months 5–6", "fast": "weeks 8–12", "text": "Register with one or two agents and apply to 未経験OK roles every week (Guide 7).", "gate": "First job offer" }
+  ]
+}
