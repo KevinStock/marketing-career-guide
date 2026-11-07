@@ -4,7 +4,7 @@ summary: The role self-assessment as a read-through worksheet, for working on pa
 ---
 This worksheet helps you find which of four beginner-friendly marketing jobs suits you best. There are no right or wrong answers. Answer honestly, not with what sounds impressive.
 
-> Prefer to work on a phone? The [Marketing Role Finder](@/role-finder/) has the same questions, saves your answers as you go, and scores them for you. A [fillable PDF](@/downloads/Marketing-Role-Finder-EN.pdf) is also available ([日本語](@/downloads/Marketing-Role-Finder-JA.pdf)).
+> Prefer to work on a phone? The [Marketing Role Finder](@/role-finder/?lang=en) has the same questions, saves your answers as you go, and scores them for you. A [fillable PDF](@/downloads/Marketing-Role-Finder-EN.pdf) is also available ([日本語](@/downloads/Marketing-Role-Finder-JA.pdf)).
 
 ## How to use this worksheet
 

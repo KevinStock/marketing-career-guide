@@ -1,15 +1,15 @@
-// Remembers checklist ticks in this browser.
+// Remembers checklist ticks and the chosen language in this browser.
 (function () {
-  var boxes = document.querySelectorAll('input[data-task]');
-  if (!boxes.length) return;
-  var key = function (id) { return 'mcg:' + id; };
-  boxes.forEach(function (box) {
-    try { box.checked = localStorage.getItem(key(box.id)) === '1'; } catch (e) {}
-    box.addEventListener('change', function () {
-      try {
-        if (box.checked) localStorage.setItem(key(box.id), '1');
-        else localStorage.removeItem(key(box.id));
-      } catch (e) {}
-    });
+  function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function set(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+
+  document.querySelectorAll('input[data-task]').forEach(function (box) {
+    var key = 'mcg:' + box.id;
+    box.checked = get(key) === '1';
+    box.addEventListener('change', function () { set(key, box.checked ? '1' : null); });
+  });
+
+  document.querySelectorAll('.lang-switch a[data-lang]').forEach(function (a) {
+    a.addEventListener('click', function () { set('mcg:lang', a.getAttribute('data-lang')); });
   });
 })();

@@ -25,7 +25,7 @@ Tick each item as you finish it. Your ticks are saved in this browser. Finish ev
 
 Standard: weeks 1–2 · Fast: week 1
 
-- [ ] Take the [Marketing Role Finder](@/role-finder/) and note your top role
+- [ ] Take the [Marketing Role Finder](@/role-finder/?lang=en) and note your top role
 - [ ] Ask Hello Work about your employment insurance status
 - [ ] Choose free training, a school or self-study (Guide 5)
 - [ ] If you are using a refund program, register before the course start date

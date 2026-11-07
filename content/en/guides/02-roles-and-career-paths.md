@@ -13,7 +13,7 @@ Most beginners in Japan start in ad operations (広告運用) at an agency, then
 | **SEO and content** · SEOマーケター / コンテンツマーケティング | Research keywords, write articles, improve website pages | Enjoy writing and research |
 | **Analytics and CRM** · アクセス解析 / CRM / MA | Build GA4 reports; segment LINE official account and email lists | Are careful, methodical and detail-oriented |
 
-**Not sure which fits?** Take the [Marketing Role Finder](@/role-finder/). It has 12 questions and four short practice tasks, and it tells you which role to start with.
+**Not sure which fits?** Take the [Marketing Role Finder](@/role-finder/?lang=en). It has 12 questions and four short practice tasks, and it tells you which role to start with.
 
 ## Combinations in demand
 

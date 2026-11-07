@@ -160,7 +160,7 @@ textarea:focus-visible, button:focus-visible, input:focus-visible { outline: 2px
 <body>
 <header class="top">
   <div class="wrap">
-    <a class="home-link" href="../">← Marketing Career Guide</a>
+    <a class="home-link" id="home-link" href="../">← Marketing Career Guide</a>
     <div class="titlerow">
       <div class="brand" id="brand"></div>
       <div class="lang" role="group" aria-label="Language / 言語">
@@ -450,6 +450,12 @@ function normalize(o) {
   return s;
 }
 let S = load();
+// ?lang=ja or ?lang=en (from the guide pages) picks the language.
+{
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q === 'ja' || q === 'en') S.lang = q;
+  try { localStorage.setItem('mcg:lang', S.lang); } catch (e) {}
+}
 let saveTimer = null;
 function persist() {
   clearTimeout(saveTimer);
@@ -480,6 +486,8 @@ function scores() {
 
 function paintMeta() {
   const l = L();
+  const hl = document.getElementById('home-link');
+  if (hl) { hl.href = S.lang === 'ja' ? '../ja/' : '../'; hl.textContent = S.lang === 'ja' ? '← マーケティング・キャリアガイド' : '← Marketing Career Guide'; }
   document.documentElement.lang = S.lang;
   document.getElementById('brand').textContent = l.brand;
   const p = percent();
@@ -672,7 +680,7 @@ document.addEventListener('click', ev => {
   const tab = ev.target.closest('#tabs [data-step]');
   if (tab) { S.step = Number(tab.dataset.step); persist(); render(true); return; }
   const lang = ev.target.closest('.lang [data-lang]');
-  if (lang && lang.dataset.lang !== S.lang) { S.lang = lang.dataset.lang; persist(); render(false); }
+  if (lang && lang.dataset.lang !== S.lang) { S.lang = lang.dataset.lang; try { localStorage.setItem('mcg:lang', S.lang); } catch (e) {} persist(); render(false); }
 });
 document.getElementById('view').addEventListener('change', ev => {
   const el = ev.target, k = el.dataset.kind, i = Number(el.dataset.i);
